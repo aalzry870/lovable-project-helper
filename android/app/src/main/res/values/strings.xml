@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">إدارة المخازن</string>
+    
+    <string name="title_activity_main">إدارة المخازن</string>
+    
+    <string name="package_name">app.lovable.f15e381499e74483b68ff385def7f6c6</string>
+    <string name="custom_url_scheme">app.lovable.f15e381499e74483b68ff385def7f6c6</string>
+</resources>

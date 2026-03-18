@@ -1,0 +1,1 @@
+ALTER TABLE public.stock_movements ADD COLUMN unit text NOT NULL DEFAULT 'قطعة';
