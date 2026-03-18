@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     // الرابط الخاص بك على Render لضمان جلب البيانات عند تشغيل التطبيق
-    url: 'https://stock-buddy-pro-25-2.onrender.com',
+    url: 'https://lovable-project-helper.onrender.com',
     cleartext: true
   }
 };
