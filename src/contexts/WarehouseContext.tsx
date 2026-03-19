@@ -376,6 +376,73 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
       };
       setMovements(prev => [...prev, newMovement]);
       await updateProductQuantities(newMovement, false);
+
+      // === إنشاء إشعار الحركة ===
+      const warehouseName = warehouses.find(w => w.id === newMovement.warehouse_id)?.name || 'مخزن';
+      const entityName = newMovement.entity_type === 'supplier'
+        ? suppliers.find(s => s.id === newMovement.entity_id)?.name || 'مورد'
+        : clients.find(c => c.id === newMovement.entity_id)?.name || 'عميل';
+      const userName = displayName || 'مستخدم';
+
+      try {
+        if (newMovement.product_id && newMovement.quantity !== undefined) {
+          const productName = products.find(p => p.id === newMovement.product_id)?.name || 'منتج';
+          const notif = getMovementNotification(newMovement.type, {
+            productName,
+            quantity: newMovement.quantity,
+            unit: newMovement.unit || 'قطعة',
+            warehouseName,
+            userName,
+            entityName,
+          });
+          await supabase.from('notifications' as any).insert({
+            type: newMovement.type === 'in' ? 'movement_in' : 'movement_out',
+            title: notif.title,
+            message: notif.message,
+            data: { movement_id: newMovement.id },
+            created_by: user.id,
+          } as any);
+
+          // تحقق من المخزون المنخفض
+          const updatedProduct = products.find(p => p.id === newMovement.product_id);
+          if (updatedProduct) {
+            const newQty = newMovement.type === 'out'
+              ? updatedProduct.quantity - newMovement.quantity
+              : updatedProduct.quantity + newMovement.quantity;
+            if (newQty <= 10) {
+              const lowNotif = getLowStockNotification({
+                productName,
+                quantity: newQty,
+                warehouseName,
+              });
+              await supabase.from('notifications' as any).insert({
+                type: newQty <= 0 ? 'out_of_stock' : 'low_stock',
+                title: lowNotif.title,
+                message: lowNotif.message,
+                data: { product_id: newMovement.product_id },
+                created_by: user.id,
+              } as any);
+            }
+          }
+        } else if (newMovement.items && newMovement.items.length > 0) {
+          const notif = getMultiMovementNotification(
+            newMovement.type,
+            newMovement.items.length,
+            warehouseName,
+            entityName,
+            userName
+          );
+          await supabase.from('notifications' as any).insert({
+            type: newMovement.type === 'in' ? 'movement_in' : 'movement_out',
+            title: notif.title,
+            message: notif.message,
+            data: { movement_id: newMovement.id },
+            created_by: user.id,
+          } as any);
+        }
+      } catch (e) {
+        console.error('Error creating notification:', e);
+      }
     }
   }, [user, updateProductQuantities]);
 
