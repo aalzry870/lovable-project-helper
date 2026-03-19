@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import NotificationBell from '@/components/NotificationBell';
 import { TranslationKey } from '@/i18n/translations';
 
 const navItems: { path: string; labelKey: TranslationKey; icon: any }[] = [
