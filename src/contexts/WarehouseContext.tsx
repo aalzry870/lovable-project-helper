@@ -59,7 +59,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, displayName } = useAuth();
   const { toast } = useToast();
 
   const fetchAll = useCallback(async () => {
