@@ -126,8 +126,11 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
                 : t('nav_dashboard')}
             </h2>
           </div>
-          <div className="text-[10px] text-muted-foreground hidden sm:block font-black opacity-30 tracking-widest">
-           ادارة المخازن برمجة مفيدالزري
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <div className="text-[10px] text-muted-foreground hidden sm:block font-black opacity-30 tracking-widest">
+              ادارة المخازن برمجة مفيدالزري
+            </div>
           </div>
         </header>
 
