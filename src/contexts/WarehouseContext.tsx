@@ -6,6 +6,11 @@ import { Product, Category, Warehouse, Supplier, Client, StockMovement, Movement
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import {
+  getMovementNotification,
+  getMultiMovementNotification,
+  getLowStockNotification,
+} from '@/utils/notificationTemplates';
 
 interface WarehouseContextType {
   products: Product[];
