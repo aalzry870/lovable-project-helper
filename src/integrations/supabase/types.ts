@@ -21,6 +21,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          organization_id: string | null
         }
         Insert: {
           created_at?: string
@@ -28,6 +29,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          organization_id?: string | null
         }
         Update: {
           created_at?: string
@@ -35,8 +37,17 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          organization_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clients: {
         Row: {
@@ -46,6 +57,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          organization_id: string | null
           phone: string
         }
         Insert: {
@@ -55,6 +67,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string
         }
         Update: {
@@ -64,9 +77,18 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clients_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fcm_tokens: {
         Row: {
@@ -100,6 +122,7 @@ export type Database = {
           id: string
           is_read: boolean
           message: string
+          organization_id: string | null
           title: string
           type: string
         }
@@ -110,6 +133,7 @@ export type Database = {
           id?: string
           is_read?: boolean
           message: string
+          organization_id?: string | null
           title: string
           type?: string
         }
@@ -120,8 +144,38 @@ export type Database = {
           id?: string
           is_read?: boolean
           message?: string
+          organization_id?: string | null
           title?: string
           type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
         }
         Relationships: []
       }
@@ -136,6 +190,7 @@ export type Database = {
           id: string
           image: string | null
           name: string
+          organization_id: string | null
           quantity: number
           warehouse_id: string | null
         }
@@ -149,6 +204,7 @@ export type Database = {
           id?: string
           image?: string | null
           name: string
+          organization_id?: string | null
           quantity?: number
           warehouse_id?: string | null
         }
@@ -162,6 +218,7 @@ export type Database = {
           id?: string
           image?: string | null
           name?: string
+          organization_id?: string | null
           quantity?: number
           warehouse_id?: string | null
         }
@@ -171,6 +228,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
@@ -187,21 +251,32 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          organization_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           display_name?: string
           id?: string
+          organization_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           display_name?: string
           id?: string
+          organization_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stock_movements: {
         Row: {
@@ -213,6 +288,7 @@ export type Database = {
           id: string
           items: Json | null
           notes: string | null
+          organization_id: string | null
           product_id: string | null
           quantity: number | null
           type: string
@@ -228,6 +304,7 @@ export type Database = {
           id?: string
           items?: Json | null
           notes?: string | null
+          organization_id?: string | null
           product_id?: string | null
           quantity?: number | null
           type: string
@@ -243,6 +320,7 @@ export type Database = {
           id?: string
           items?: Json | null
           notes?: string | null
+          organization_id?: string | null
           product_id?: string | null
           quantity?: number | null
           type?: string
@@ -250,6 +328,13 @@ export type Database = {
           warehouse_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stock_movements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stock_movements_product_id_fkey"
             columns: ["product_id"]
@@ -275,6 +360,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          organization_id: string | null
           phone: string
         }
         Insert: {
@@ -285,6 +371,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string
         }
         Update: {
@@ -295,9 +382,18 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -326,6 +422,7 @@ export type Database = {
           manager: string
           name: string
           notes: string | null
+          organization_id: string | null
           type: string
         }
         Insert: {
@@ -336,6 +433,7 @@ export type Database = {
           manager?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           type?: string
         }
         Update: {
@@ -346,9 +444,18 @@ export type Database = {
           manager?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "warehouses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -363,6 +470,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

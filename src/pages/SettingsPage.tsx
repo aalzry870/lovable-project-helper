@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Globe, Moon, Sun, Info, LogOut, Shield, Users, Pencil, Trash2, Save, UserCog, Download, Upload, Mail, Lock } from 'lucide-react';
+import { Globe, Moon, Sun, Info, LogOut, Shield, Users, Pencil, Trash2, Save, UserCog, Download, Upload, Mail, Lock, UserPlus } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,6 +39,13 @@ const SettingsPage = () => {
   const [restoreDialog, setRestoreDialog] = useState(false);
   const [restoreFile, setRestoreFile] = useState<File | null>(null);
 
+  // Employee creation states
+  const [addEmployeeDialog, setAddEmployeeDialog] = useState(false);
+  const [newEmpEmail, setNewEmpEmail] = useState('');
+  const [newEmpPassword, setNewEmpPassword] = useState('');
+  const [newEmpName, setNewEmpName] = useState('');
+  const [creatingEmployee, setCreatingEmployee] = useState(false);
+
   const [editSelf, setEditSelf] = useState(false);
   const [selfName, setSelfName] = useState(displayName);
   const [selfEmail, setSelfEmail] = useState(user?.email || '');
@@ -72,20 +79,20 @@ const SettingsPage = () => {
     if (!isAdmin) return;
     setLoadingUsers(true);
     const [profilesRes, rolesRes] = await Promise.all([
-      supabase.from('profiles').select('user_id, display_name'),
-      supabase.from('user_roles').select('user_id, role'),
+      supabase.from('profiles' as any).select('user_id, display_name'),
+      supabase.from('user_roles' as any).select('user_id, role'),
     ]);
     if (profilesRes.error || rolesRes.error) {
       toast({ title: 'خطأ', description: 'تعذر مزامنة بيانات المستخدمين', variant: 'destructive' });
       setLoadingUsers(false);
       return;
     }
-    const profiles = profilesRes.data ?? [];
-    const roles = rolesRes.data ?? [];
+    const profiles = (profilesRes.data ?? []) as any[];
+    const roles = (rolesRes.data ?? []) as any[];
     const merged: UserProfile[] = profiles.map((p) => ({
       user_id: p.user_id,
       display_name: p.display_name,
-      role: (roles.find((r) => r.user_id === p.user_id)?.role as 'admin' | 'employee') || 'employee',
+      role: (roles.find((r: any) => r.user_id === p.user_id)?.role as 'admin' | 'employee') || 'employee',
     }));
     setUsers(merged);
     setLoadingUsers(false);
@@ -109,7 +116,7 @@ const SettingsPage = () => {
 
   const handleSaveEdit = async () => {
     if (!editingUser) return;
-    const { error: nameErr } = await supabase.from('profiles').update({ display_name: editName }).eq('user_id', editingUser.user_id);
+    const { error: nameErr } = await supabase.from('profiles' as any).update({ display_name: editName } as any).eq('user_id', editingUser.user_id);
     if (nameErr) { toast({ title: 'خطأ', description: 'فشل تعديل الاسم', variant: 'destructive' }); return; }
     const { error: roleErr } = await supabase.rpc('admin_update_role', { _user_id: editingUser.user_id, _role: editRole });
     if (roleErr) { toast({ title: 'خطأ', description: 'فشل تعديل الصلاحية', variant: 'destructive' }); return; }
@@ -130,7 +137,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSavingSelf(true);
 
-    const { error: nameErr } = await supabase.from('profiles').update({ display_name: selfName }).eq('user_id', user.id);
+    const { error: nameErr } = await supabase.from('profiles' as any).update({ display_name: selfName } as any).eq('user_id', user.id);
     if (nameErr) { toast({ title: 'خطأ', description: 'فشل تعديل الاسم', variant: 'destructive' }); setSavingSelf(false); return; }
 
     if (selfEmail.trim() && selfEmail !== user.email) {
@@ -243,32 +250,32 @@ const SettingsPage = () => {
 
       if (data.categories?.length) {
         for (const c of data.categories) {
-          await supabase.from('categories').upsert({ id: c.id, name: c.name, description: c.description || '', created_by: c.created_by });
+          await supabase.from('categories' as any).upsert({ id: c.id, name: c.name, description: c.description || '', created_by: c.created_by } as any);
         }
       }
       if (data.warehouses?.length) {
         for (const w of data.warehouses) {
-          await supabase.from('warehouses').upsert({ id: w.id, name: w.name, location: w.location || '', manager: w.manager || '', notes: w.notes || '', created_by: w.created_by });
+          await supabase.from('warehouses' as any).upsert({ id: w.id, name: w.name, location: w.location || '', manager: w.manager || '', notes: w.notes || '', created_by: w.created_by } as any);
         }
       }
       if (data.suppliers?.length) {
         for (const s of data.suppliers) {
-          await supabase.from('suppliers').upsert({ id: s.id, name: s.name, phone: s.phone || '', email: s.email || '', address: s.address || '', notes: s.notes || '', created_by: s.created_by });
+          await supabase.from('suppliers' as any).upsert({ id: s.id, name: s.name, phone: s.phone || '', email: s.email || '', address: s.address || '', notes: s.notes || '', created_by: s.created_by } as any);
         }
       }
       if (data.clients?.length) {
         for (const c of data.clients) {
-          await supabase.from('clients').upsert({ id: c.id, name: c.name, phone: c.phone || '', address: c.address || '', notes: c.notes || '', created_by: c.created_by });
+          await supabase.from('clients' as any).upsert({ id: c.id, name: c.name, phone: c.phone || '', address: c.address || '', notes: c.notes || '', created_by: c.created_by } as any);
         }
       }
       if (data.products?.length) {
         for (const p of data.products) {
-          await supabase.from('products').upsert({ id: p.id, name: p.name, code: p.code, barcode: p.barcode || '', category_id: p.category_id, quantity: p.quantity || 0, warehouse_id: p.warehouse_id, description: p.description || '', created_by: p.created_by });
+          await supabase.from('products' as any).upsert({ id: p.id, name: p.name, code: p.code, barcode: p.barcode || '', category_id: p.category_id, quantity: p.quantity || 0, warehouse_id: p.warehouse_id, description: p.description || '', created_by: p.created_by } as any);
         }
       }
       if (data.movements?.length) {
         for (const m of data.movements) {
-          await supabase.from('stock_movements').upsert({ id: m.id, product_id: m.product_id, warehouse_id: m.warehouse_id, type: m.type, quantity: m.quantity, entity_id: m.entity_id, entity_type: m.entity_type, date: m.date, notes: m.notes || '', created_by: m.created_by });
+          await supabase.from('stock_movements' as any).upsert({ id: m.id, product_id: m.product_id, warehouse_id: m.warehouse_id, type: m.type, quantity: m.quantity, entity_id: m.entity_id, entity_type: m.entity_type, date: m.date, notes: m.notes || '', created_by: m.created_by } as any);
         }
       }
 
@@ -344,13 +351,20 @@ const SettingsPage = () => {
           </div>
         </section>
 
-        {/* إدارة المستخدمين - إصلاح الجدول للشاشات الصغيرة */}
+        {/* إدارة المستخدمين */}
         {isAdmin && (
           <section className="bg-card p-4 sm:p-6 rounded-2xl border border-border shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 mb-4 border-b pb-3">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              <h2 className="text-base sm:text-lg font-semibold">{t('set_users')}</h2>
+            <div className="flex items-center justify-between mb-4 border-b pb-3">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                <h2 className="text-base sm:text-lg font-semibold">{t('set_users')}</h2>
+              </div>
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setAddEmployeeDialog(true)}>
+                <UserPlus className="w-4 h-4" />
+                إضافة موظف
+              </Button>
             </div>
+            <p className="text-xs text-muted-foreground mb-3">يمكنك إضافة حتى 3 موظفين لمؤسستك</p>
             {loadingUsers ? (
               <div className="text-center py-6 text-muted-foreground">{t('loading')}</div>
             ) : (
@@ -489,6 +503,55 @@ const SettingsPage = () => {
           <div className="flex gap-2">
             <Button onClick={handleRestore} className="flex-1">{t('set_restore')}</Button>
             <Button variant="outline" onClick={() => setRestoreDialog(false)} className="flex-1">{t('cancel')}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* إضافة موظف */}
+      <Dialog open={addEmployeeDialog} onOpenChange={setAddEmployeeDialog}>
+        <DialogContent className="text-right" dir={dir}>
+          <DialogHeader><DialogTitle>إضافة موظف جديد</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm block mb-1">اسم الموظف</label>
+              <Input value={newEmpName} onChange={e => setNewEmpName(e.target.value)} placeholder="أدخل اسم الموظف" />
+            </div>
+            <div>
+              <label className="text-sm block mb-1">البريد الإلكتروني</label>
+              <Input type="email" dir="ltr" className="text-left" value={newEmpEmail} onChange={e => setNewEmpEmail(e.target.value)} placeholder="employee@email.com" />
+            </div>
+            <div>
+              <label className="text-sm block mb-1">كلمة المرور</label>
+              <Input type="password" dir="ltr" className="text-left" value={newEmpPassword} onChange={e => setNewEmpPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" minLength={6} />
+            </div>
+            <Button
+              className="w-full"
+              disabled={creatingEmployee || !newEmpName.trim() || !newEmpEmail.trim() || newEmpPassword.length < 6}
+              onClick={async () => {
+                setCreatingEmployee(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const res = await supabase.functions.invoke('create-employee', {
+                    body: { email: newEmpEmail, password: newEmpPassword, displayName: newEmpName },
+                  });
+                  if (res.error || res.data?.error) {
+                    toast({ title: 'خطأ', description: res.data?.error || res.error?.message || 'فشل إنشاء الموظف', variant: 'destructive' });
+                  } else {
+                    toast({ title: 'تم إنشاء حساب الموظف بنجاح' });
+                    setAddEmployeeDialog(false);
+                    setNewEmpEmail('');
+                    setNewEmpPassword('');
+                    setNewEmpName('');
+                    fetchUsers();
+                  }
+                } catch (err: any) {
+                  toast({ title: 'خطأ', description: err.message, variant: 'destructive' });
+                }
+                setCreatingEmployee(false);
+              }}
+            >
+              {creatingEmployee ? t('loading') : 'إنشاء حساب الموظف'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

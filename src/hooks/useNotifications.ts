@@ -16,7 +16,7 @@ export interface Notification {
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
+  const { user, organizationId } = useAuth();
 
   const fetchNotifications = useCallback(async () => {
     const { data } = await supabase
@@ -92,16 +92,17 @@ export function useNotifications() {
 
   const createNotification = useCallback(
     async (type: string, title: string, message: string, data: any = {}) => {
-      if (!user?.id) return;
+      if (!user?.id || !organizationId) return;
       await supabase.from('notifications' as any).insert({
         type,
         title,
         message,
         data,
         created_by: user.id,
+        organization_id: organizationId,
       } as any);
     },
-    [user]
+    [user, organizationId]
   );
 
   return {
