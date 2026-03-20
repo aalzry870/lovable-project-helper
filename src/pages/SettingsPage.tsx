@@ -116,7 +116,7 @@ const SettingsPage = () => {
 
   const handleSaveEdit = async () => {
     if (!editingUser) return;
-    const { error: nameErr } = await supabase.from('profiles').update({ display_name: editName }).eq('user_id', editingUser.user_id);
+    const { error: nameErr } = await supabase.from('profiles' as any).update({ display_name: editName } as any).eq('user_id', editingUser.user_id);
     if (nameErr) { toast({ title: 'خطأ', description: 'فشل تعديل الاسم', variant: 'destructive' }); return; }
     const { error: roleErr } = await supabase.rpc('admin_update_role', { _user_id: editingUser.user_id, _role: editRole });
     if (roleErr) { toast({ title: 'خطأ', description: 'فشل تعديل الصلاحية', variant: 'destructive' }); return; }
