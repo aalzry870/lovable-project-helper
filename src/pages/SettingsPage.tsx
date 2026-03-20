@@ -137,7 +137,7 @@ const SettingsPage = () => {
     if (!user) return;
     setSavingSelf(true);
 
-    const { error: nameErr } = await supabase.from('profiles').update({ display_name: selfName }).eq('user_id', user.id);
+    const { error: nameErr } = await supabase.from('profiles' as any).update({ display_name: selfName } as any).eq('user_id', user.id);
     if (nameErr) { toast({ title: 'خطأ', description: 'فشل تعديل الاسم', variant: 'destructive' }); setSavingSelf(false); return; }
 
     if (selfEmail.trim() && selfEmail !== user.email) {
