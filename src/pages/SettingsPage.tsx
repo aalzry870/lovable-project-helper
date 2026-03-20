@@ -79,20 +79,20 @@ const SettingsPage = () => {
     if (!isAdmin) return;
     setLoadingUsers(true);
     const [profilesRes, rolesRes] = await Promise.all([
-      supabase.from('profiles').select('user_id, display_name'),
-      supabase.from('user_roles').select('user_id, role'),
+      supabase.from('profiles' as any).select('user_id, display_name'),
+      supabase.from('user_roles' as any).select('user_id, role'),
     ]);
     if (profilesRes.error || rolesRes.error) {
       toast({ title: 'خطأ', description: 'تعذر مزامنة بيانات المستخدمين', variant: 'destructive' });
       setLoadingUsers(false);
       return;
     }
-    const profiles = profilesRes.data ?? [];
-    const roles = rolesRes.data ?? [];
+    const profiles = (profilesRes.data ?? []) as any[];
+    const roles = (rolesRes.data ?? []) as any[];
     const merged: UserProfile[] = profiles.map((p) => ({
       user_id: p.user_id,
       display_name: p.display_name,
-      role: (roles.find((r) => r.user_id === p.user_id)?.role as 'admin' | 'employee') || 'employee',
+      role: (roles.find((r: any) => r.user_id === p.user_id)?.role as 'admin' | 'employee') || 'employee',
     }));
     setUsers(merged);
     setLoadingUsers(false);
