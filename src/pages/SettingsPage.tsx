@@ -250,32 +250,32 @@ const SettingsPage = () => {
 
       if (data.categories?.length) {
         for (const c of data.categories) {
-          await supabase.from('categories').upsert({ id: c.id, name: c.name, description: c.description || '', created_by: c.created_by });
+          await supabase.from('categories' as any).upsert({ id: c.id, name: c.name, description: c.description || '', created_by: c.created_by } as any);
         }
       }
       if (data.warehouses?.length) {
         for (const w of data.warehouses) {
-          await supabase.from('warehouses').upsert({ id: w.id, name: w.name, location: w.location || '', manager: w.manager || '', notes: w.notes || '', created_by: w.created_by });
+          await supabase.from('warehouses' as any).upsert({ id: w.id, name: w.name, location: w.location || '', manager: w.manager || '', notes: w.notes || '', created_by: w.created_by } as any);
         }
       }
       if (data.suppliers?.length) {
         for (const s of data.suppliers) {
-          await supabase.from('suppliers').upsert({ id: s.id, name: s.name, phone: s.phone || '', email: s.email || '', address: s.address || '', notes: s.notes || '', created_by: s.created_by });
+          await supabase.from('suppliers' as any).upsert({ id: s.id, name: s.name, phone: s.phone || '', email: s.email || '', address: s.address || '', notes: s.notes || '', created_by: s.created_by } as any);
         }
       }
       if (data.clients?.length) {
         for (const c of data.clients) {
-          await supabase.from('clients').upsert({ id: c.id, name: c.name, phone: c.phone || '', address: c.address || '', notes: c.notes || '', created_by: c.created_by });
+          await supabase.from('clients' as any).upsert({ id: c.id, name: c.name, phone: c.phone || '', address: c.address || '', notes: c.notes || '', created_by: c.created_by } as any);
         }
       }
       if (data.products?.length) {
         for (const p of data.products) {
-          await supabase.from('products').upsert({ id: p.id, name: p.name, code: p.code, barcode: p.barcode || '', category_id: p.category_id, quantity: p.quantity || 0, warehouse_id: p.warehouse_id, description: p.description || '', created_by: p.created_by });
+          await supabase.from('products' as any).upsert({ id: p.id, name: p.name, code: p.code, barcode: p.barcode || '', category_id: p.category_id, quantity: p.quantity || 0, warehouse_id: p.warehouse_id, description: p.description || '', created_by: p.created_by } as any);
         }
       }
       if (data.movements?.length) {
         for (const m of data.movements) {
-          await supabase.from('stock_movements').upsert({ id: m.id, product_id: m.product_id, warehouse_id: m.warehouse_id, type: m.type, quantity: m.quantity, entity_id: m.entity_id, entity_type: m.entity_type, date: m.date, notes: m.notes || '', created_by: m.created_by });
+          await supabase.from('stock_movements' as any).upsert({ id: m.id, product_id: m.product_id, warehouse_id: m.warehouse_id, type: m.type, quantity: m.quantity, entity_id: m.entity_id, entity_type: m.entity_type, date: m.date, notes: m.notes || '', created_by: m.created_by } as any);
         }
       }
 
