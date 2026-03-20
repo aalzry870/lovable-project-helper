@@ -506,6 +506,55 @@ const SettingsPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* إضافة موظف */}
+      <Dialog open={addEmployeeDialog} onOpenChange={setAddEmployeeDialog}>
+        <DialogContent className="text-right" dir={dir}>
+          <DialogHeader><DialogTitle>إضافة موظف جديد</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm block mb-1">اسم الموظف</label>
+              <Input value={newEmpName} onChange={e => setNewEmpName(e.target.value)} placeholder="أدخل اسم الموظف" />
+            </div>
+            <div>
+              <label className="text-sm block mb-1">البريد الإلكتروني</label>
+              <Input type="email" dir="ltr" className="text-left" value={newEmpEmail} onChange={e => setNewEmpEmail(e.target.value)} placeholder="employee@email.com" />
+            </div>
+            <div>
+              <label className="text-sm block mb-1">كلمة المرور</label>
+              <Input type="password" dir="ltr" className="text-left" value={newEmpPassword} onChange={e => setNewEmpPassword(e.target.value)} placeholder="كلمة مرور (6 أحرف على الأقل)" minLength={6} />
+            </div>
+            <Button
+              className="w-full"
+              disabled={creatingEmployee || !newEmpName.trim() || !newEmpEmail.trim() || newEmpPassword.length < 6}
+              onClick={async () => {
+                setCreatingEmployee(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const res = await supabase.functions.invoke('create-employee', {
+                    body: { email: newEmpEmail, password: newEmpPassword, displayName: newEmpName },
+                  });
+                  if (res.error || res.data?.error) {
+                    toast({ title: 'خطأ', description: res.data?.error || res.error?.message || 'فشل إنشاء الموظف', variant: 'destructive' });
+                  } else {
+                    toast({ title: 'تم إنشاء حساب الموظف بنجاح' });
+                    setAddEmployeeDialog(false);
+                    setNewEmpEmail('');
+                    setNewEmpPassword('');
+                    setNewEmpName('');
+                    fetchUsers();
+                  }
+                } catch (err: any) {
+                  toast({ title: 'خطأ', description: err.message, variant: 'destructive' });
+                }
+                setCreatingEmployee(false);
+              }}
+            >
+              {creatingEmployee ? t('loading') : 'إنشاء حساب الموظف'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
