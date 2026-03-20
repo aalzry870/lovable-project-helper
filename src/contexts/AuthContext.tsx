@@ -10,6 +10,7 @@ interface AuthContextType {
   role: AppRole | null;
   loading: boolean;
   displayName: string;
+  organizationId: string | null;
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -24,10 +25,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [displayName, setDisplayName] = useState('');
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
 
   const fetchRole = async (userId: string): Promise<AppRole | null> => {
     const { data, error } = await supabase
-      .from('user_roles')
+      .from('user_roles' as any)
       .select('role')
       .eq('user_id', userId)
       .maybeSingle();
@@ -37,22 +39,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return null;
     }
 
-    return (data?.role as AppRole | undefined) ?? null;
+    return ((data as any)?.role as AppRole | undefined) ?? null;
   };
 
-  const fetchProfile = async (userId: string): Promise<string> => {
+  const fetchProfile = async (userId: string): Promise<{ displayName: string; orgId: string | null }> => {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('display_name')
+      .from('profiles' as any)
+      .select('display_name, organization_id')
       .eq('user_id', userId)
       .maybeSingle();
 
     if (error) {
       console.error('Error fetching profile:', error);
-      return '';
+      return { displayName: '', orgId: null };
     }
 
-    return data?.display_name ?? '';
+    const d = data as any;
+    return { displayName: d?.display_name ?? '', orgId: d?.organization_id ?? null };
   };
 
   useEffect(() => {
@@ -64,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const nextUserId = nextSession?.user?.id ?? null;
 
-      // Skip if same user to avoid flickering
       if (nextUserId && nextUserId === currentUserId) {
         setSession(nextSession);
         setUser(nextSession?.user ?? null);
@@ -78,6 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!nextSession?.user) {
         setRole(null);
         setDisplayName('');
+        setOrganizationId(null);
         setLoading(false);
         return;
       }
@@ -90,7 +93,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       ]).then(([roleResult, profileResult]) => {
         if (!mounted) return;
         setRole(roleResult.status === 'fulfilled' ? roleResult.value : null);
-        setDisplayName(profileResult.status === 'fulfilled' ? profileResult.value : '');
+        if (profileResult.status === 'fulfilled') {
+          setDisplayName(profileResult.value.displayName);
+          setOrganizationId(profileResult.value.orgId);
+        }
       });
     };
 
@@ -139,6 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setRole(null);
     setDisplayName('');
+    setOrganizationId(null);
   };
 
   return (
@@ -149,6 +156,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role,
         loading,
         displayName,
+        organizationId,
         signUp,
         signIn,
         signOut,
