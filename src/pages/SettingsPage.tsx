@@ -39,6 +39,13 @@ const SettingsPage = () => {
   const [restoreDialog, setRestoreDialog] = useState(false);
   const [restoreFile, setRestoreFile] = useState<File | null>(null);
 
+  // Employee creation states
+  const [addEmployeeDialog, setAddEmployeeDialog] = useState(false);
+  const [newEmpEmail, setNewEmpEmail] = useState('');
+  const [newEmpPassword, setNewEmpPassword] = useState('');
+  const [newEmpName, setNewEmpName] = useState('');
+  const [creatingEmployee, setCreatingEmployee] = useState(false);
+
   const [editSelf, setEditSelf] = useState(false);
   const [selfName, setSelfName] = useState(displayName);
   const [selfEmail, setSelfEmail] = useState(user?.email || '');
