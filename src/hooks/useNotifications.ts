@@ -16,7 +16,7 @@ export interface Notification {
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
+  const { user, organizationId } = useAuth();
 
   const fetchNotifications = useCallback(async () => {
     const { data } = await supabase
