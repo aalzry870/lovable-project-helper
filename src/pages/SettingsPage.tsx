@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Globe, Moon, Sun, Info, LogOut, Shield, Users, Pencil, Trash2, Save, UserCog, Download, Upload, Mail, Lock } from 'lucide-react';
+import { Globe, Moon, Sun, Info, LogOut, Shield, Users, Pencil, Trash2, Save, UserCog, Download, Upload, Mail, Lock, UserPlus } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { useAuth } from '@/contexts/AuthContext';
