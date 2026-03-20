@@ -351,13 +351,20 @@ const SettingsPage = () => {
           </div>
         </section>
 
-        {/* إدارة المستخدمين - إصلاح الجدول للشاشات الصغيرة */}
+        {/* إدارة المستخدمين */}
         {isAdmin && (
           <section className="bg-card p-4 sm:p-6 rounded-2xl border border-border shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 mb-4 border-b pb-3">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              <h2 className="text-base sm:text-lg font-semibold">{t('set_users')}</h2>
+            <div className="flex items-center justify-between mb-4 border-b pb-3">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                <h2 className="text-base sm:text-lg font-semibold">{t('set_users')}</h2>
+              </div>
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setAddEmployeeDialog(true)}>
+                <UserPlus className="w-4 h-4" />
+                إضافة موظف
+              </Button>
             </div>
+            <p className="text-xs text-muted-foreground mb-3">يمكنك إضافة حتى 3 موظفين لمؤسستك</p>
             {loadingUsers ? (
               <div className="text-center py-6 text-muted-foreground">{t('loading')}</div>
             ) : (
