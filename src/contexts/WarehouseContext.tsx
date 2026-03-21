@@ -439,7 +439,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
         console.error('Error creating notification:', e);
       }
     }
-  }, [user, organizationId, updateProductQuantities, warehouses, suppliers, clients, products, displayName]);
+  }, [user, updateProductQuantities, warehouses, suppliers, clients, products, displayName]);
 
   const updateMovement = useCallback(async (m: StockMovement) => {
     const old = movements.find(x => x.id === m.id);
