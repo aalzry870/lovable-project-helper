@@ -416,7 +416,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
                 message: lowNotif.message,
                 data: { product_id: newMovement.product_id },
                 created_by: user.id,
-                organization_id: organizationId,
               } as any);
             }
           }
