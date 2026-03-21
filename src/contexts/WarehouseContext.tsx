@@ -433,7 +433,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
             message: notif.message,
             data: { movement_id: newMovement.id },
             created_by: user.id,
-            organization_id: organizationId,
           } as any);
         }
       } catch (e) {
