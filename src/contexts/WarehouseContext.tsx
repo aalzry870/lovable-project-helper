@@ -59,7 +59,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const { user, displayName, organizationId } = useAuth();
+  const { user, displayName } = useAuth();
   const { toast } = useToast();
 
   const fetchAll = useCallback(async () => {
@@ -126,13 +126,13 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Products ----
   const addProduct = useCallback(async (p: Omit<Product, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) {
+    if (!user?.id) {
       showError('يجب تسجيل الدخول أولاً');
       return;
     }
     const { data, error } = await supabase
       .from('products' as any)
-      .insert({ ...p, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...p, created_by: user.id } as any)
       .select()
       .single();
 
@@ -143,7 +143,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
     if (data) {
       setProducts(prev => [...prev, data as any]);
     }
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateProduct = useCallback(async (p: Product) => {
     const { error } = await supabase
@@ -169,15 +169,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Categories ----
   const addCategory = useCallback(async (c: Omit<Category, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('categories' as any)
-      .insert({ ...c, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...c, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setCategories(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateCategory = useCallback(async (c: Category) => {
     const { error } = await supabase
@@ -198,15 +198,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Warehouses ----
   const addWarehouse = useCallback(async (w: Omit<Warehouse, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('warehouses' as any)
-      .insert({ ...w, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...w, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setWarehouses(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateWarehouse = useCallback(async (w: Warehouse) => {
     const { error } = await supabase
@@ -227,15 +227,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Suppliers ----
   const addSupplier = useCallback(async (s: Omit<Supplier, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('suppliers' as any)
-      .insert({ ...s, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...s, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setSuppliers(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateSupplier = useCallback(async (s: Supplier) => {
     const { error } = await supabase
@@ -256,15 +256,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Clients ----
   const addClient = useCallback(async (c: Omit<Client, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('clients' as any)
-      .insert({ ...c, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...c, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setClients(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateClient = useCallback(async (c: Client) => {
     const { error } = await supabase
@@ -320,7 +320,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
   }, [products]);
 
   const addMovement = useCallback(async (m: Omit<StockMovement, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) {
+    if (!user?.id) {
       showError('يجب تسجيل الدخول أولاً');
       return;
     }
@@ -333,7 +333,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
       date: m.date,
       notes: m.notes,
       created_by: user.id,
-      organization_id: organizationId,
     };
 
     if (m.product_id && m.quantity !== undefined) {
@@ -397,7 +396,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
             message: notif.message,
             data: { movement_id: newMovement.id },
             created_by: user.id,
-            organization_id: organizationId,
           } as any);
 
           // تحقق من المخزون المنخفض
@@ -418,7 +416,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
                 message: lowNotif.message,
                 data: { product_id: newMovement.product_id },
                 created_by: user.id,
-                organization_id: organizationId,
               } as any);
             }
           }
@@ -436,14 +433,13 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
             message: notif.message,
             data: { movement_id: newMovement.id },
             created_by: user.id,
-            organization_id: organizationId,
           } as any);
         }
       } catch (e) {
         console.error('Error creating notification:', e);
       }
     }
-  }, [user, organizationId, updateProductQuantities, warehouses, suppliers, clients, products, displayName]);
+  }, [user, updateProductQuantities, warehouses, suppliers, clients, products, displayName]);
 
   const updateMovement = useCallback(async (m: StockMovement) => {
     const old = movements.find(x => x.id === m.id);

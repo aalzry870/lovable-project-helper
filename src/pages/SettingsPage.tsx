@@ -364,7 +364,7 @@ const SettingsPage = () => {
                 إضافة موظف
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">يمكنك إضافة حتى 3 موظفين لمؤسستك</p>
+            <p className="text-xs text-muted-foreground mb-3">المستخدمون المسجلون في النظام - يمكنك تعديل صلاحياتهم</p>
             {loadingUsers ? (
               <div className="text-center py-6 text-muted-foreground">{t('loading')}</div>
             ) : (

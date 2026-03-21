@@ -11,7 +11,6 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const authHeader = req.headers.get('Authorization')!
 
-    // Client with user's token to verify identity
     const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
       global: { headers: { Authorization: authHeader } },
     })
@@ -23,7 +22,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Admin client
     const adminClient = createClient(supabaseUrl, serviceRoleKey)
 
     // Check caller is admin
@@ -36,34 +34,6 @@ Deno.serve(async (req) => {
     if (roleData?.role !== 'admin') {
       return new Response(JSON.stringify({ error: 'فقط المدير يمكنه إنشاء موظفين' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Get caller's org
-    const { data: callerProfile } = await adminClient
-      .from('profiles')
-      .select('organization_id')
-      .eq('user_id', caller.id)
-      .single()
-
-    if (!callerProfile?.organization_id) {
-      return new Response(JSON.stringify({ error: 'لا توجد مؤسسة مرتبطة' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const orgId = callerProfile.organization_id
-
-    // Check employee count (max 3)
-    const { count } = await adminClient
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .eq('organization_id', orgId)
-      .neq('user_id', caller.id)
-
-    if ((count ?? 0) >= 3) {
-      return new Response(JSON.stringify({ error: 'الحد الأقصى 3 موظفين لكل مؤسسة' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -89,30 +59,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Create profile with same org (the trigger will try to create a new org, so we need to handle this)
-    // First delete any org created by the trigger for this user
-    const { data: autoProfile } = await adminClient
-      .from('profiles')
-      .select('organization_id')
-      .eq('user_id', newUser.user.id)
-      .single()
-
-    if (autoProfile?.organization_id && autoProfile.organization_id !== orgId) {
-      // Delete the auto-created org
-      await adminClient.from('organizations').delete().eq('id', autoProfile.organization_id)
-    }
-
-    // Update profile to use the admin's org
+    // Ensure profile and role are set (trigger should handle this, but update to be safe)
     await adminClient
       .from('profiles')
-      .update({ organization_id: orgId, display_name: displayName })
-      .eq('user_id', newUser.user.id)
+      .upsert({ user_id: newUser.user.id, display_name: displayName })
 
-    // Update role to employee
     await adminClient
       .from('user_roles')
-      .update({ role: 'employee' })
-      .eq('user_id', newUser.user.id)
+      .upsert({ user_id: newUser.user.id, role: 'employee' })
 
     return new Response(JSON.stringify({ success: true, userId: newUser.user.id }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
