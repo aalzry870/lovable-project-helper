@@ -169,15 +169,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Categories ----
   const addCategory = useCallback(async (c: Omit<Category, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('categories' as any)
-      .insert({ ...c, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...c, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setCategories(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateCategory = useCallback(async (c: Category) => {
     const { error } = await supabase
