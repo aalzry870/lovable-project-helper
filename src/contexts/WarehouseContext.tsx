@@ -227,15 +227,15 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Suppliers ----
   const addSupplier = useCallback(async (s: Omit<Supplier, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) return;
+    if (!user?.id) return;
     const { data, error } = await supabase
       .from('suppliers' as any)
-      .insert({ ...s, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...s, created_by: user.id } as any)
       .select()
       .single();
     if (error) showError(error.message);
     else if (data) setSuppliers(prev => [...prev, data as any]);
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateSupplier = useCallback(async (s: Supplier) => {
     const { error } = await supabase
