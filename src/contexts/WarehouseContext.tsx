@@ -320,7 +320,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
   }, [products]);
 
   const addMovement = useCallback(async (m: Omit<StockMovement, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) {
+    if (!user?.id) {
       showError('يجب تسجيل الدخول أولاً');
       return;
     }
@@ -333,7 +333,6 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
       date: m.date,
       notes: m.notes,
       created_by: user.id,
-      organization_id: organizationId,
     };
 
     if (m.product_id && m.quantity !== undefined) {
