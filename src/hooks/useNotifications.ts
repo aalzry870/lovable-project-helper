@@ -92,17 +92,16 @@ export function useNotifications() {
 
   const createNotification = useCallback(
     async (type: string, title: string, message: string, data: any = {}) => {
-      if (!user?.id || !organizationId) return;
+      if (!user?.id) return;
       await supabase.from('notifications' as any).insert({
         type,
         title,
         message,
         data,
         created_by: user.id,
-        organization_id: organizationId,
       } as any);
     },
-    [user, organizationId]
+    [user]
   );
 
   return {
