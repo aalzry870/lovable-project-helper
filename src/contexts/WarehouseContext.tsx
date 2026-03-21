@@ -126,13 +126,13 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
 
   // ---- Products ----
   const addProduct = useCallback(async (p: Omit<Product, 'id' | 'created_at' | 'created_by'>) => {
-    if (!user?.id || !organizationId) {
+    if (!user?.id) {
       showError('يجب تسجيل الدخول أولاً');
       return;
     }
     const { data, error } = await supabase
       .from('products' as any)
-      .insert({ ...p, created_by: user.id, organization_id: organizationId } as any)
+      .insert({ ...p, created_by: user.id } as any)
       .select()
       .single();
 
@@ -143,7 +143,7 @@ export const WarehouseProvider = ({ children }: { children: ReactNode }) => {
     if (data) {
       setProducts(prev => [...prev, data as any]);
     }
-  }, [user, organizationId]);
+  }, [user]);
 
   const updateProduct = useCallback(async (p: Product) => {
     const { error } = await supabase
