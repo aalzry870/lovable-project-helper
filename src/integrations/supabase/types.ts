@@ -189,9 +189,11 @@ export type Database = {
           description: string
           id: string
           image: string | null
+          min_quantity: number
           name: string
           organization_id: string | null
           quantity: number
+          unit: string
           warehouse_id: string | null
         }
         Insert: {
@@ -203,9 +205,11 @@ export type Database = {
           description?: string
           id?: string
           image?: string | null
+          min_quantity?: number
           name: string
           organization_id?: string | null
           quantity?: number
+          unit?: string
           warehouse_id?: string | null
         }
         Update: {
@@ -217,9 +221,11 @@ export type Database = {
           description?: string
           id?: string
           image?: string | null
+          min_quantity?: number
           name?: string
           organization_id?: string | null
           quantity?: number
+          unit?: string
           warehouse_id?: string | null
         }
         Relationships: [
